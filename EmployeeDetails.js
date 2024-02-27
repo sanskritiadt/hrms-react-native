@@ -22,11 +22,12 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 export default function EmployeeDetails({ navigation }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+
   const [temp, setTemp] = useState({
-    name: "",
+    Startdate: "",
     empID: "",
     workingHours: "",
-    date: "",
+    Enddate: "",
   });
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -56,36 +57,45 @@ export default function EmployeeDetails({ navigation }) {
   const showEndDatePickerModal = () => {
     setShowEndDatePicker(true);
   };
-
   function handleData() {
-    fetch("https://65c3148bf7e6ea59682bed24.mockapi.io/empData", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(temp),
+    const formattedStartDate = startDate.toISOString().split('T')[0];
+    const formattedEndDate = endDate.toISOString().split('T')[0];
+
+  const newData = {
+    Startdate: formattedStartDate,
+    empID: temp.empID,
+    workingHours: temp.workingHours,
+    Enddate: formattedEndDate,
+  };
+
+  fetch("https://65c3148bf7e6ea59682bed24.mockapi.io/empData", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newData),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+      return response.json();
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Login failed");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Login successful:", data);
-        Alert.alert("Employee Details", "Data Submitted successfully");
-        setTemp({
-          name: "",
-          empID: "",
-          workingHours: "",
-          date: "",
-        });
-        navigation.navigate("EmpAttendence");
-      })
-      .catch((error) => {
-        console.error("Login error:", error);
-        Alert.alert("Getting error in Submitting", "error");
+    .then((data) => {
+      console.log("Login successful:", data);
+      Alert.alert("Employee Details", "Data Submitted successfully");
+      setTemp({
+        Startdate: "",
+        empID: "",
+        workingHours: "",
+        Enddate: "",
       });
+      navigation.navigate("EmpAttendence");
+    })
+    .catch((error) => {
+      console.error("Login error:", error);
+      Alert.alert("Getting error in Submitting", "error");
+    });
   }
 
   return (
@@ -108,19 +118,6 @@ export default function EmployeeDetails({ navigation }) {
           </View>
 
           <View style={styles.inputView}>
-            <Text style={styles.TextInput} onPress={showEndDatePickerModal}>
-              {endDate.toDateString()}
-            </Text>
-            {showEndDatePicker && (
-              <DateTimePicker
-                value={endDate}
-                mode="date"
-                display="default"
-                onChange={handleEndDateChange}
-              />
-            )}
-          </View>
-          <View style={styles.inputView}>
             <Text style={styles.TextInput} onPress={showStartDatePickerModal}>
               {startDate.toDateString()}
             </Text>
@@ -133,11 +130,27 @@ export default function EmployeeDetails({ navigation }) {
               />
             )}
           </View>
+
+          <View style={styles.inputView}>
+            <Text style={styles.TextInput} onPress={showEndDatePickerModal}>
+              {endDate.toDateString()}
+            </Text>
+            {showEndDatePicker && (
+              <DateTimePicker
+                value={endDate}
+                mode="date"
+                display="default"
+                onChange={handleEndDateChange}
+
+              />
+            )}
+          </View>
+          
         </View>
         <View style={{ alignItems: "center" }}>
           <TouchableOpacity style={styles.submitBtn} onPress={handleData}>
             <Pressable>
-              <Text style={{ color: "white", fontWeight:'bold' }}>Submit</Text>
+              <Text style={{ color: "white", fontWeight: 'bold' }}>Submit</Text>
             </Pressable>
           </TouchableOpacity>
         </View>
@@ -162,7 +175,7 @@ const styles = StyleSheet.create({
   },
   TextInput: {
     padding: 14,
-    
+
     opacity: 1,
     color: "#013e5a",
     padding: 10,
@@ -219,6 +232,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 15,
-    
+
   },
 });

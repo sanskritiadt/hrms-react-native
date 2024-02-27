@@ -3,9 +3,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ScrollView } from 'react-native';
-import { Table, Row } from 'react-native-table-component';
+import { Table, Row} from 'react-native-table-component';
 //import DateTimePickerModal from "react-native-modal-datetime-picker";
-
+import { LogBox, ignoreLogs } from 'react-native';
+LogBox.ignoreLogs(['Invalid prop textStyle of type array supplied to Cell']);
 export default function EmpAttendance() {
   const [attendance, setAttendance] = useState([]);
   const [filteredAttendance, setFilteredAttendance] = useState([]);
@@ -29,24 +30,23 @@ export default function EmpAttendance() {
   useEffect(() => {
     fetchData();
   }, []);
-
-
+  
   return (
     <ScrollView>
     <View style={styles.container}>
       <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff', }}>
         <Row 
         data={[
-          <Text style={{ color: 'white', textAlign:'center',fontWeight: 'bold'}}>Name</Text>,
+          <Text style={{ color: 'white', textAlign:'center',fontWeight: 'bold' }}>employee Id</Text>,
+          <Text style={{ color: 'white', textAlign:'center',fontWeight: 'bold'}}>Start date</Text>,
+          <Text style={{ color: 'white', textAlign:'center',fontWeight: 'bold' }}>End date</Text>,
           <Text style={{ color: 'white', textAlign:'center',fontWeight: 'bold' }}>Working Hours</Text>,
-          <Text style={{ color: 'white', textAlign:'center',fontWeight: 'bold' }}>Employee ID</Text>,
-          <Text style={{ color: 'white', textAlign:'center',fontWeight: 'bold' }}>Date</Text>,
         ]}
         style={styles.head} textStyle={styles.text} />
         {filteredAttendance.map((item, index) => (
           <Row
             key={index}
-            data={[item.name, item.workingHours, item.empID, item.date]}
+            data={[item.empID,  item.Startdate, item.Enddate,item.workingHours]}
             style={[styles.row, index % 2 && { backgroundColor: '#f2f2f2' }]}
             textStyle={styles.text}
           />

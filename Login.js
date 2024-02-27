@@ -132,7 +132,10 @@ export default function Login({ navigation }) {
              
             />
             {isFocused && (<Pressable style={{ zIndex: 1, opacity: 0.7, height: 40, width: 35, position: 'absolute', justifyContent: 'center', alignItems: 'center', margin: 5, right: 75 }} onPress={() => setVisible(!Visible)}>
-                  <Icon name="lock" size={20} color="brown" />
+                  
+                  
+                  {Visible ? <Icon name="lock" size={20} color="brown" /> : <Icon name="lock-open" size={20} color="brown" />}
+  
                 </Pressable>)}
                 
 

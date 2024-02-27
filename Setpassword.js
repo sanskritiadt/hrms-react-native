@@ -26,6 +26,7 @@ export default function Setpassword({ navigation }) {
     confirmpass: null
   });
   const [check,setcheck]=useState(true);
+  const [passValidation,setpassValidation]=useState('Weak');
   useEffect(() => {
     if (temp.newpass !== null || temp.confirmpass !== null) {
       if (temp.newpass === temp.confirmpass) {
@@ -67,7 +68,25 @@ export default function Setpassword({ navigation }) {
   //         Alert.alert("Getting error in Submitting", "error");
   //       });
   //   }
+  useEffect(()=>{
+    if(temp.newpass && temp.newpass.length >= 4){
+      setpassValidation('Average');
+      if(temp.newpass && temp.newpass.length >= 8){
+        setpassValidation('Hard');
+      }
+    }
+    else{
+      setpassValidation("Weak");
+    }
 
+  },[temp.newpass]);
+  
+  const buttonHandler = () => {
+    if (check) {
+      console.log("HEllo bhai");
+      Alert.alert('Error', 'Passwords do not match');
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.box}>
@@ -103,15 +122,16 @@ export default function Setpassword({ navigation }) {
           </View>
           {check &&
             
-          <Text style={styles.passtext}>passwords do not match</Text>
+          <Text style={styles.passtext}>Passwords do not match <Text>[<Text style={{color:'darkblue'}}> { passValidation } </Text>]</Text> </Text>
+          
           }
 
 
         </View>
         <View style={{ alignItems: "center" }}>
-          <TouchableOpacity style={styles.submitBtn}>
+          <TouchableOpacity style={styles.submitBtn} onPress={buttonHandler}>
             <Pressable>
-              <Text style={{ color: "white" }}>Submit</Text>
+              <Text style={{ color: "white" }} >Submit</Text>
             </Pressable>
           </TouchableOpacity>
         </View>
