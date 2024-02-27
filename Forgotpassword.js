@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#f2f5f6",
         width: 240,
     }, img: {
-        width: 240,
+        width: 245,
         height: 55,
     },
     box: {

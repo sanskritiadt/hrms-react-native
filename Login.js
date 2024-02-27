@@ -34,12 +34,8 @@ export default function Login({ navigation }) {
   const [Visible, setVisible] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
 
-  const handleFocus = () => {
-    setIsFocused(true);
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
+  const handleView = () => {
+    setIsFocused((value) => !value);
   };
   const handleForgotPassword = () => {
     Alert.alert(
@@ -99,7 +95,6 @@ export default function Login({ navigation }) {
       keyboardVerticalOffset={-100}
       style={styles.container}
     >
-      {/* <View style={styles.container}> */}
       <View style={styles.box}>
         <StatusBar style="auto" />
         <View style={{ alignItems: "center", marginTop: 40, marginBottom: 20 }}>
@@ -127,17 +122,17 @@ export default function Login({ navigation }) {
               secureTextEntry={Visible}
               onChangeText={(text) => setLogin({ ...login, password: text })}
               value={login.password}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-             
+              onFocus={handleView}
+              onBlur={handleView}
+
             />
             {isFocused && (<Pressable style={{ zIndex: 1, opacity: 0.7, height: 40, width: 35, position: 'absolute', justifyContent: 'center', alignItems: 'center', margin: 5, right: 75 }} onPress={() => setVisible(!Visible)}>
-                  
-                  
-                  {Visible ? <Icon name="lock" size={20} color="brown" /> : <Icon name="lock-open" size={20} color="brown" />}
-  
-                </Pressable>)}
-                
+
+
+              {Visible ? <Icon name="eye-off" size={20} color="brown" /> : <Icon name="eye" size={20} color="brown" />}
+
+            </Pressable>)}
+
 
 
           </View>
@@ -221,7 +216,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 20,
   },
   forgot_button: {
     height: 30,
@@ -250,8 +245,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   img: {
-    width: 240,
-    height: 55,
+    width: 255,
+    height: 60,
   },
   bot: {
     position: "absolute",

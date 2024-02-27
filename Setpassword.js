@@ -1,6 +1,7 @@
 import img from "./logo.png";
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useCallback, useEffect } from "react";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 import {
@@ -20,13 +21,34 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function Setpassword({ navigation }) {
+  const [passVisible, setpassVisible] = useState(true);
+  const [confirmpassVisible, setconfirmpassVisible] = useState(true);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isFocusedconfirm, setIsFocusedconfrm] = useState(false);
 
+  const handleFocus = () => {
+    setIsFocused((prevVisible) => !prevVisible);
+    
+  };
+  
+  const handleBlur = () => {
+    setIsFocusedconfrm((prevVisible) => !prevVisible);
+    
+  };
+  // const handleBlurconf = () => {
+  //   setIsFocusedconfrm((prevVisible) => !prevVisible);
+    
+  // };
+  // const handleFocusconf = () => {
+  //   setIsFocusedconfrm((prevVisible) => !prevVisible);
+    
+  // };
   const [temp, setTemp] = useState({
     newpass: null,
     confirmpass: null
   });
-  const [check,setcheck]=useState(true);
-  const [passValidation,setpassValidation]=useState('Weak');
+  const [check, setcheck] = useState(true);
+  const [passValidation, setpassValidation] = useState('Weak');
   useEffect(() => {
     if (temp.newpass !== null || temp.confirmpass !== null) {
       if (temp.newpass === temp.confirmpass) {
@@ -68,19 +90,19 @@ export default function Setpassword({ navigation }) {
   //         Alert.alert("Getting error in Submitting", "error");
   //       });
   //   }
-  useEffect(()=>{
-    if(temp.newpass && temp.newpass.length >= 4){
+  useEffect(() => {
+    if (temp.newpass && temp.newpass.length >= 4) {
       setpassValidation('Average');
-      if(temp.newpass && temp.newpass.length >= 8){
+      if (temp.newpass && temp.newpass.length >= 8) {
         setpassValidation('Hard');
       }
     }
-    else{
+    else {
       setpassValidation("Weak");
     }
 
-  },[temp.newpass]);
-  
+  }, [temp.newpass]);
+
   const buttonHandler = () => {
     if (check) {
       console.log("HEllo bhai");
@@ -94,19 +116,27 @@ export default function Setpassword({ navigation }) {
         <View style={{ alignItems: "center", marginTop: 40, marginBottom: 20 }}>
           <Image source={img} style={styles.img}></Image>
         </View>
-        <Text style={styles.empt}>Enter new password</Text>
+        {/* <Text style={styles.empt}>- Enter your new password -</Text> */}
 
         <View style={styles.inputbox}>
           <View style={styles.inputView}>
             <TextInput
-              value={temp.empID}
+              value={temp.newpass}
               style={styles.TextInput}
               placeholder="New password"
               keyboardType="default"
-              secureTextEntry={true}
+              secureTextEntry={passVisible}
               placeholderTextColor="#003f5c"
+              onFocus={handleFocus}
+              onBlur={handleFocus}
               onChangeText={(passn) => setTemp({ ...temp, newpass: passn })}
             />
+            {isFocused && <Pressable style={{ zIndex: 1, opacity: 0.7, height: 40, width: 35, position: 'absolute', justifyContent: 'center', alignItems: 'center', margin: 5, right: 45 }} onPress={() => setpassVisible(!passVisible)}>
+
+
+              {passVisible ? <Icon name="eye-off" size={20} color="brown" /> : <Icon name="eye" size={20} color="brown" />}
+
+            </Pressable>}
           </View>
           {/* <Text style={styles.empt}>Enter new password</Text> */}
           <View style={styles.inputView}>
@@ -115,20 +145,28 @@ export default function Setpassword({ navigation }) {
               style={styles.TextInput}
               placeholder="Confirm password"
               keyboardType="default"
-              secureTextEntry={true}
+              secureTextEntry={confirmpassVisible}
               placeholderTextColor="#003f5c"
               onChangeText={(passc) => setTemp({ ...temp, confirmpass: passc })}
+              onFocus={handleBlur}
+              onBlur={handleBlur}
             />
+            {isFocusedconfirm && <Pressable style={{ zIndex: 1, opacity: 0.7, height: 40, width: 35, position: 'absolute', justifyContent: 'center', alignItems: 'center', margin: 5, right: 45 }} onPress={() => setconfirmpassVisible(!confirmpassVisible)}>
+
+
+              {confirmpassVisible ? <Icon name="eye-off" size={20} color="brown" /> : <Icon name="eye" size={20} color="brown" />}
+
+            </Pressable>}
           </View>
           {check &&
-            
-          <Text style={styles.passtext}>Passwords do not match <Text>[<Text style={{color:'darkblue'}}> { passValidation } </Text>]</Text> </Text>
-          
+
+            <Text style={styles.passtext}>Passwords do not match <Text>[<Text style={{ color: 'darkblue' }}> {passValidation} </Text>]</Text> </Text>
+
           }
 
 
         </View>
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", marginVertical:10 }}>
           <TouchableOpacity style={styles.submitBtn} onPress={buttonHandler}>
             <Pressable>
               <Text style={{ color: "white" }} >Submit</Text>
@@ -169,7 +207,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: 320,
-    height: 370,
+    height: 360,
     backgroundColor: "#fff",
     borderRadius: 30,
     shadowColor: "#000",
@@ -204,8 +242,8 @@ const styles = StyleSheet.create({
   },
   passtext: {
     fontFamily: "serif",
-    color:'red',
-    marginHorizontal:40,
+    color: 'red',
+    marginHorizontal: 40,
     marginVertical: 1,
     fontSize: 14,
   },
