@@ -21,17 +21,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.anant20.AlphaDot"
+      }
+      
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "abd8518b-252b-4a98-9c23-a011bfbc5296"
-      }
-    },
-    "owner": "anant20"
+    }
+    
   }
 }
