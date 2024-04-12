@@ -5,7 +5,8 @@ import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import img from "./logo.png";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import {
 
   StyleSheet,
@@ -19,7 +20,8 @@ import {
   Image,
   Dimensions,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  ToastAndroid
 } from "react-native";
 
 const { width: windowWidth } = Dimensions.get('window');
@@ -58,37 +60,50 @@ export default function Login({ navigation }) {
     );
   };
 
-  function handle() {
-    fetch("https://65c3148bf7e6ea59682bed24.mockapi.io/empLogin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(login),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Login failed");
-        }
-        return response.json();
-      })
-      .then((data) => {
-
-        console.log("Login successful:", data);
-        Alert.alert("Login", "Login successful");
-        setLogin({ email: "", password: "" });
-        navigation.navigate("EmployeeDetails");
-      })
-      .catch((error) => {
-        console.error("Login error:", error);
-        Alert.alert(
-          "Login Failed",
-          "Please check your credentials and try again."
-        );
+  const handleLogin = async (values) => {
+    try {
+      const response = await fetch('https://sit.hrms.alphadot.co.in/apigateway/api/auth/login', {
+        method: "POST",
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          {
+            // email: values.email,
+            // password: values.password,
+            email: 'anantshah.adt@gmail.com',
+            password: 'Anant@123',
+            deviceInfo: {
+              deviceId: 'D1',
+              deviceType: 'DEVICE_TYPE_ANDROID'
+            }
+          }
+        ),
       });
-  }
 
-  const myIcon = <Icon name="user" size={30} color="blue" />;
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      await AsyncStorage.setItem('response-token', data.jwtAuthenticationResponse.accessToken);
+      await AsyncStorage.setItem('refresh-token', data.jwtAuthenticationResponse.refreshToken);
+      await AsyncStorage.setItem('EmpID',String( data.employeeId));
+
+      console.log(data.jwtAuthenticationResponse.accessToken);
+      ToastAndroid.show('Login-Successfull !', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+    } catch (error) {
+      console.error('There was an error!', error.message);
+      ToastAndroid.show('Server Error try again !', ToastAndroid.SHORT, ToastAndroid.TOP);
+    }
+  };
+
+
+ 
+
+
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -147,7 +162,7 @@ export default function Login({ navigation }) {
         </View>
 
         <View style={{ alignItems: "center" }}>
-          <TouchableOpacity style={styles.loginBtn} onPress={handle}>
+          <TouchableOpacity style={styles.loginBtn} onPress={() => handleLogin(login)}>
             <Pressable style={styles.loginText}>
               <Text style={{ color: "white", fontWeight: 'bold' }}>Login</Text>
             </Pressable>
