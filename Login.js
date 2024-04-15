@@ -70,10 +70,10 @@ export default function Login({ navigation }) {
         },
         body: JSON.stringify(
           {
-            // email: values.email,
-            // password: values.password,
-            email: 'anantshah.adt@gmail.com',
-            password: 'Anant@123',
+            email: values.email,
+            password: values.password,
+            // email: 'anantshah.adt@gmail.com',
+            // password: 'Anant@123',
             deviceInfo: {
               deviceId: 'D1',
               deviceType: 'DEVICE_TYPE_ANDROID'
@@ -93,6 +93,7 @@ export default function Login({ navigation }) {
 
       console.log(data.jwtAuthenticationResponse.accessToken);
       ToastAndroid.show('Login-Successfull !', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+      navigation.navigate("EmployeeDetails");
     } catch (error) {
       console.error('There was an error!', error.message);
       ToastAndroid.show('Server Error try again !', ToastAndroid.SHORT, ToastAndroid.TOP);

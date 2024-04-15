@@ -1,7 +1,7 @@
 import img from "./logo.png";
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useCallback } from "react";
-
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import {
   StyleSheet,
@@ -61,101 +61,123 @@ export default function EmployeeDetails({ navigation }) {
     const formattedStartDate = startDate.toISOString().split('T')[0];
     const formattedEndDate = endDate.toISOString().split('T')[0];
 
-  const newData = {
-    Startdate: formattedStartDate,
-    empID: temp.empID,
-    workingHours: temp.workingHours,
-    Enddate: formattedEndDate,
-  };
+    const newData = {
+      Startdate: formattedStartDate,
+      empID: temp.empID,
+      workingHours: temp.workingHours,
+      Enddate: formattedEndDate,
+    };
 
-  fetch("https://65c3148bf7e6ea59682bed24.mockapi.io/empData", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(newData),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-      return response.json();
+    fetch("https://65c3148bf7e6ea59682bed24.mockapi.io/empData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newData),
     })
-    .then((data) => {
-      console.log("Login successful:", data);
-      Alert.alert("Employee Details", "Data Submitted successfully");
-      setTemp({
-        Startdate: "",
-        empID: "",
-        workingHours: "",
-        Enddate: "",
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Login failed");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Login successful:", data);
+        Alert.alert("Employee Details", "Data Submitted successfully");
+        setTemp({
+          Startdate: "",
+          empID: "",
+          workingHours: "",
+          Enddate: "",
+        });
+        navigation.navigate("EmpAttendence");
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        Alert.alert("Getting error in Submitting", "error");
       });
-      navigation.navigate("EmpAttendence");
-    })
-    .catch((error) => {
-      console.error("Login error:", error);
-      Alert.alert("Getting error in Submitting", "error");
-    });
   }
 
   return (
+
+
     <View style={styles.container}>
-      <View style={styles.box}>
-        <StatusBar style="auto" />
-        <View style={{ alignItems: "center", marginTop: 40, marginBottom: 20 }}>
-          <Image source={img} style={styles.img}></Image>
+      <View style={styles.header}>
+
+        <Pressable onPress={() => navigation.navigate("Login")}>
+          <View>
+            <Icon name="arrow-left" size={30} color="black" style={{ marginHorizontal: 15 }} />
+          </View>
+        </Pressable>
+        <View style={{flexDirection:'row', justifyContent:'space-between', width:"80%"}}>
+        <Text style={styles.maintext}>Hello</Text>
+        <View >
+          <Pressable style={styles.logout}><Text style={{fontSize:17, fontWeight:500, color:'white'}}>Log Out</Text>
+          {/* <Icon name="clock-out" size={23} color="black"/> */}
+          </Pressable>
         </View>
-        <View style={styles.inputbox}>
-          <View style={styles.inputView}>
-            <TextInput
-              value={temp.empID}
-              style={styles.TextInput}
-              placeholder="Employee ID"
-              keyboardType="numeric"
-              placeholderTextColor="#003f5c"
-              onChangeText={(empID) => setTemp({ ...temp, empID: empID })}
-            />
-          </View>
-
-          <View style={styles.inputView}>
-            <Text style={styles.TextInput} onPress={showStartDatePickerModal}>
-              {startDate.toDateString()}
-            </Text>
-            {showStartDatePicker && (
-              <DateTimePicker
-                value={startDate}
-                mode="date"
-                display="default"
-                onChange={handleStartDateChange}
-              />
-            )}
-          </View>
-
-          <View style={styles.inputView}>
-            <Text style={styles.TextInput} onPress={showEndDatePickerModal}>
-              {endDate.toDateString()}
-            </Text>
-            {showEndDatePicker && (
-              <DateTimePicker
-                value={endDate}
-                mode="date"
-                display="default"
-                onChange={handleEndDateChange}
-
-              />
-            )}
-          </View>
-          
         </View>
-        <View style={{ alignItems: "center" }}>
-          <TouchableOpacity style={styles.submitBtn} onPress={handleData}>
-            <Pressable>
-              <Text style={{ color: "white", fontWeight: 'bold' }}>Submit</Text>
-            </Pressable>
-          </TouchableOpacity>
+      </View>
+
+      <View style={{ height: "80%", justifyContent: 'center' }}>
+        <View style={styles.box}>
+          <StatusBar style="auto" />
+          <View style={{ alignItems: "center", marginTop: 40, marginBottom: 20 }}>
+            <Image source={img} style={styles.img}></Image>
+          </View>
+          <View style={styles.inputbox}>
+            <View style={styles.inputView}>
+              <TextInput
+                value={temp.empID}
+                style={styles.TextInput}
+                placeholder="Employee ID"
+                keyboardType="numeric"
+                placeholderTextColor="#003f5c"
+                onChangeText={(empID) => setTemp({ ...temp, empID: empID })}
+              />
+            </View>
+
+            <View style={styles.inputView}>
+              <Text style={styles.TextInput} onPress={showStartDatePickerModal}>
+                {startDate.toDateString()}
+              </Text>
+              {showStartDatePicker && (
+                <DateTimePicker
+                  value={startDate}
+                  mode="date"
+                  display="default"
+                  onChange={handleStartDateChange}
+                />
+              )}
+            </View>
+
+            <View style={styles.inputView}>
+              <Text style={styles.TextInput} onPress={showEndDatePickerModal}>
+                {endDate.toDateString()}
+              </Text>
+              {showEndDatePicker && (
+                <DateTimePicker
+                  value={endDate}
+                  mode="date"
+                  display="default"
+                  onChange={handleEndDateChange}
+
+                />
+              )}
+            </View>
+
+          </View>
+          <View style={{ alignItems: "center" }}>
+            <TouchableOpacity style={styles.submitBtn} onPress={handleData}>
+              <Pressable>
+                <Text style={{ color: "white", fontWeight: 'bold' }}>Submit</Text>
+              </Pressable>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
+
   );
 }
 const styles = StyleSheet.create({
@@ -163,7 +185,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
+  },
+  logout:{
+    borderWidth:1,
+    borderColor: 'red',
+    backgroundColor:'#ff5757',
+    paddingHorizontal:8,
+    paddingVertical:3,
+    borderRadius:8
   },
   inputView: {
     borderRadius: 10,
@@ -173,6 +203,19 @@ const styles = StyleSheet.create({
   inputbox: {
     marginVertical: 10,
   },
+  header: {
+    // backgroundColor: "green",
+    width: "100%",
+    height: 65,
+    marginVertical: 30,
+    // justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+
   TextInput: {
     padding: 14,
 
@@ -187,6 +230,7 @@ const styles = StyleSheet.create({
     height: 55,
   },
   box: {
+    // marginVertical: 150,
     width: 320,
     height: 370,
     backgroundColor: "#fff",
@@ -194,7 +238,8 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 10,
+      color: 'black'
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -234,4 +279,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
 
   },
+  maintext: {
+    fontWeight: "400",
+    fontSize: 20
+  }
 });
