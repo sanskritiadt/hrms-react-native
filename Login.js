@@ -8,7 +8,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {
-
+  ActivityIndicator,
   StyleSheet,
   Text,
   View,
@@ -35,7 +35,8 @@ export default function Login({ navigation }) {
   const [checkcancel, setCheckCancel] = useState(true);
   const [Visible, setVisible] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
-
+  const [screenloader, Setscreenloader] = useState(false);
+  const [LoginState, SetLoginState] = useState(false);
   const handleView = () => {
     setIsFocused((value) => !value);
   };
@@ -62,6 +63,8 @@ export default function Login({ navigation }) {
 
   const handleLogin = async (values) => {
     try {
+      // Setscreenloader(true);
+      SetLoginState(true);
       const response = await fetch('https://sit.hrms.alphadot.co.in/apigateway/api/auth/login', {
         method: "POST",
         headers: {
@@ -70,7 +73,7 @@ export default function Login({ navigation }) {
         },
         body: JSON.stringify(
           {
-            email: values.email,
+            email: values.email.toLowerCase(),
             password: values.password,
             // email: 'anantshah.adt@gmail.com',
             // password: 'Anant@123',
@@ -89,21 +92,20 @@ export default function Login({ navigation }) {
       const data = await response.json();
       await AsyncStorage.setItem('response-token', data.jwtAuthenticationResponse.accessToken);
       await AsyncStorage.setItem('refresh-token', data.jwtAuthenticationResponse.refreshToken);
-      await AsyncStorage.setItem('EmpID',String( data.employeeId));
+      await AsyncStorage.setItem('EmpID', String(data.employeeId));
 
       console.log(data.jwtAuthenticationResponse.accessToken);
+      console.log("-------------------------------------");
+      console.log(data);
+      SetLoginState(false);
       ToastAndroid.show('Login-Successfull !', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-      navigation.navigate("EmployeeDetails");
+      navigation.navigate("Timesheet");
     } catch (error) {
       console.error('There was an error!', error.message);
       ToastAndroid.show('Server Error try again !', ToastAndroid.SHORT, ToastAndroid.TOP);
+      SetLoginState(false);
     }
   };
-
-
- 
-
-
 
   return (
     <KeyboardAvoidingView
@@ -111,12 +113,21 @@ export default function Login({ navigation }) {
       keyboardVerticalOffset={-100}
       style={styles.container}
     >
+      {screenloader &&
+        <View style={styles.loader}>
+
+        </View>
+      }
       <View style={styles.box}>
+
         <StatusBar style="auto" />
+
+
         <View style={{ alignItems: "center", marginTop: 40, marginBottom: 20 }}>
+
           <Image source={img} style={styles.img}></Image>
         </View>
-        <View></View>
+
         <View style={styles.inputbox}>
           <View style={styles.inputView}>
             <TextInput
@@ -163,9 +174,12 @@ export default function Login({ navigation }) {
         </View>
 
         <View style={{ alignItems: "center" }}>
-          <TouchableOpacity style={styles.loginBtn} onPress={() => handleLogin(login)}>
+          <TouchableOpacity
+            style={[styles.loginBtn, LoginState ? styles.loginBtnDisabled : null]}
+            onPress={() => handleLogin(login)} disabled={LoginState}>
+            {/* <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate("EmployeeDetails")}> */}
             <Pressable style={styles.loginText}>
-              <Text style={{ color: "white", fontWeight: 'bold' }}>Login</Text>
+              <Text style={{ color: "white", fontWeight: 'bold' }} >{!LoginState ? 'Login' : <View><ActivityIndicator color="#ffff" /></View>}</Text>
             </Pressable>
           </TouchableOpacity>
         </View>
@@ -174,20 +188,15 @@ export default function Login({ navigation }) {
       <View style={[styles.bot]}>
         <TouchableOpacity
           style={styles.circularButton}
-          onPress={() => navigation.navigate("Alphadot Chatbot")}
-        >
+          onPress={() => navigation.navigate("Alphadot Chatbot")}>
           <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.buttonText}>
-              Hello there !
-            </Text>
+            <Text style={styles.buttonText}>Hello there !</Text>
             <Text style={{}}>
               <Icon name="robot" size={20} color="white" />
             </Text>
           </View>
-
         </TouchableOpacity>
       </View>
-      {/* </View> */}
     </KeyboardAvoidingView>
   );
 }
@@ -197,7 +206,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "brown",
     alignItems: "center",
-    // justifyContent: "center",
   },
   inputView: {
     borderRadius: 10,
@@ -207,12 +215,22 @@ const styles = StyleSheet.create({
   inputbox: {
     marginVertical: 10,
   },
+  loader: {
+    // justifyContent:'center',
+    position: 'absolute',
+    marginLeft: '50%',
+    marginRight: '50%',
+    marginTop: '35%'
+  },
   TextInput: {
     padding: 10,
     borderRadius: 5,
     backgroundColor: "#f2f5f6",
     width: 240,
 
+  },
+  loginBtnDisabled: {
+    backgroundColor: 'gray'
   },
   box: {
     // bottom:-100,

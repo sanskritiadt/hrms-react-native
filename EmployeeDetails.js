@@ -15,9 +15,12 @@ import {
   Alert,
   ScrollView,
   Platform,
+  ToastAndroid,
+  ActivityIndicator
 } from "react-native";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function EmployeeDetails({ navigation }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -33,6 +36,7 @@ export default function EmployeeDetails({ navigation }) {
   const [endDate, setEndDate] = useState(new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const token = AsyncStorage.getItem("response-token");
 
   const handleStartDateChange = (event, selectedDate) => {
     setShowStartDatePicker(Platform.OS === "ios");
@@ -98,12 +102,46 @@ export default function EmployeeDetails({ navigation }) {
       });
   }
 
+    const handleLogout = async () => {
+      // console.log("Hello");
+    try {
+      const response = await fetch('https://sit.hrms.alphadot.co.in/apigateway/api/user/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          deviceInfo: {
+            deviceId: 'D1',
+            deviceType: 'DEVICE_TYPE_ANDROID',
+            notificationToken: null
+          }
+        })
+      }); 
+      AsyncStorage.clear();
+      const deletedToken = await AsyncStorage.getItem("response-token");
+      console.log("Deleted token:", deletedToken);
+      ToastAndroid.show('Log Out Successful !', ToastAndroid.SHORT, ToastAndroid.TOP);
+
+    } catch (error) {
+      AsyncStorage.clear();
+      console.log("Server Error Cannot Log out", error);
+      ToastAndroid.show(' Server ErrorCannot logout !', ToastAndroid.SHORT, ToastAndroid.TOP);
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    }
+    navigation.navigate("Login");
+  };
+
+
   return (
 
 
     <View style={styles.container}>
       <View style={styles.header}>
-
+    
         <Pressable onPress={() => navigation.navigate("Login")}>
           <View>
             <Icon name="arrow-left" size={30} color="black" style={{ marginHorizontal: 15 }} />
@@ -112,9 +150,13 @@ export default function EmployeeDetails({ navigation }) {
         <View style={{flexDirection:'row', justifyContent:'space-between', width:"80%"}}>
         <Text style={styles.maintext}>Hello</Text>
         <View >
-          <Pressable style={styles.logout}><Text style={{fontSize:17, fontWeight:500, color:'white'}}>Log Out</Text>
-          {/* <Icon name="clock-out" size={23} color="black"/> */}
-          </Pressable>
+          <TouchableOpacity onPress={handleLogout} >
+          {/* <Pressable style={styles.logout}><Text style={{fontSize:17, fontWeight:500, color:'white'}} >Log Out</Text>
+          </Pressable> */}
+          <View style={styles.logout}>
+          <Text style={{fontSize:17, color:'white', fontWeight:500}}>Log Out</Text>
+          </View>
+          </TouchableOpacity>
         </View>
         </View>
       </View>
@@ -168,7 +210,8 @@ export default function EmployeeDetails({ navigation }) {
 
           </View>
           <View style={{ alignItems: "center" }}>
-            <TouchableOpacity style={styles.submitBtn} onPress={handleData}>
+            {/* <TouchableOpacity style={styles.submitBtn} onPress={handleData}> */}
+            <TouchableOpacity style={styles.submitBtn} onPress={()=>navigation.navigate("Timesheet")}>
               <Pressable>
                 <Text style={{ color: "white", fontWeight: 'bold' }}>Submit</Text>
               </Pressable>
@@ -188,12 +231,13 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   logout:{
-    borderWidth:1,
+    borderWidth:0,
     borderColor: 'red',
-    backgroundColor:'#ff5757',
+    backgroundColor:'brown',
     paddingHorizontal:8,
-    paddingVertical:3,
-    borderRadius:8
+    paddingVertical:4,
+    borderRadius:8,
+  
   },
   inputView: {
     borderRadius: 10,
